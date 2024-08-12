@@ -1,0 +1,59 @@
+---
+title: "pcoa"
+output: html_document
+date: "2024-08-12"
+---
+
+```{r setup, include=FALSE}
+asv <- read.csv("asv.csv", header = T, row.names = 1)
+group <- read.csv("group.csv", header = T)
+dist <- vegdist(asv, method = "bray")
+pcoa <- cmdscale(dist, eig = TRUE, k=2)
+var1 <- round(pcoa$eig[1]/sum(pcoa$eig),4)
+var2 <- round(pcoa$eig[2]/sum(pcoa$eig),4)
+bray <- data.frame(pcoa$points)
+data <- cbind(bray, group)
+main_theme <- theme(panel.background=element_blank(),
+panel.grid=element_blank(),
+axis.line.x=element_line(size=.5, colour="black"),
+axis.line.y=element_line(size=.5, colour="black"),
+axis.ticks=element_line(color="black"),
+axis.text.y=element_text(color="black", size=10),
+axis.text.x=element_text(color="black", size=10),
+legend.position="right",
+legend.background=element_blank(),
+legend.key=element_blank(),
+legend.text= element_text(size=10),
+text=element_text(family="sans", size=10))
+p <- ggplot(data = data, mapping = aes(x=X1, y=X2, color=site, shape=site)) +geom_point(aes(fill=site), alpha=0.9, size=3)+labs(x=paste("PCoA1 (23.93%)"), y=paste("PCoA2 (20.15%)"))+ main_theme + scale_color_manual(values = color)
+p1 <- ggplot(data, aes(x=X1, fill=site))+scale_fill_manual(values=color)+
+geom_density(alpha=0.2)+
+scale_y_continuous(expand=c(0,0))+
+scale_x_continuous(expand=c(0,0))+main_theme
+p2 <- ggplot(data, aes(x=X2, fill=site))+scale_fill_manual(values=color)+
+geom_density(alpha=0.2)+
+scale_y_continuous(expand=c(0,0))+
+scale_x_continuous(expand=c(0,0))+main_theme
++coord_flip()
+f <- p %>% insert_top(p1, 0.2) %>% insert_right(p2, 0.2)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
