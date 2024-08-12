@@ -1,0 +1,79 @@
+---
+title: "rda"
+output: html_document
+date: "2024-08-12"
+---
+
+```{r setup, include=FALSE}
+library(vegan)
+
+library(ggplot2)
+
+library(ggrepel)
+
+fc <- read.csv(file.choose(),header = T,row.names = 1)###读取环境因子
+
+sp <- read.csv(file.choose(),header = T,row.names = 1)###读取物种组成
+
+spp <- decostand(sp,method = "hellinger")###对响应变量做hellinger转化
+
+fcc <- log10(fc)###对解释变量取对数
+
+uu <- rda(spp~.,fcc)###做冗余分析
+
+ii <- summary(uu)###查看分析结果
+
+sp <- as.data.frame(ii$species[,1:2])*5###提取相应变量坐标，乘以5是使图美观，不影响分析
+
+st <- as.data.frame(ii$sites[,1:2])###提取样方坐标，有两种模式，可根据自己数据探索：二选一即可
+
+yz <- as.data.frame(ii$biplot[,1:2])###提取解释变量坐标
+
+ggplot() +
+
+  geom_text_repel(data = st,aes(RDA1,RDA2,label=row.names(st)),size=4)+
+
+  geom_segment(data = sp,aes(x = 0, y = 0, xend = RDA1, yend = RDA2), 
+
+               arrow = arrow(angle=22.5,length = unit(0.35,"cm"),
+
+                             type = "closed"),linetype=1, size=0.6,colour = "red")+
+
+  geom_text_repel(data = sp,aes(RDA1,RDA2,label=row.names(sp)))+
+
+  geom_segment(data = yz,aes(x = 0, y = 0, xend = RDA1, yend = RDA2), 
+
+               arrow = arrow(angle=22.5,length = unit(0.35,"cm"),
+
+                             type = "closed"),linetype=1, size=0.6,colour = "blue")+
+
+  geom_text_repel(data = yz,aes(RDA1,RDA2,label=row.names(yz)))+
+
+  labs(x="RDA1 42.72%",y="RDA2 26.10%")+
+
+  geom_hline(yintercept=0,linetype=3,size=1) + 
+
+  geom_vline(xintercept=0,linetype=3,size=1)+
+
+  theme_bw()+theme(panel.grid=element_blank())
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
