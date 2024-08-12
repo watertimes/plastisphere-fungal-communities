@@ -1,0 +1,56 @@
+---
+title: "randomforest"
+output: html_document
+date: "2024-08-12"
+---
+
+```{r setup, include=FALSE}
+rm(list = ls())
+require(microeco)
+require(magrittr)
+require(tidyverse)
+require(RColorBrewer)
+require(paletteer)
+
+asv <- read.csv("ASV.csv",header = T,row.names = 1)
+group <- read.csv("group.csv",header = T,row.names = 1)
+taxon <- read.csv("taxon.csv",header = T,row.names = 1)
+
+dataset <- microtable$new(otu_table = asv,sample_table = group,tax_table = taxon)
+
+rf <- trans_diff$new(dataset = dataset, 
+                     method = "rf", 
+                     group = "Group", 
+                     taxa_level = "Genus")
+
+g1 <- rf$plot_diff_bar(use_number = 1:20, 
+                       group_order = c("MPs", "Soil"))
+
+# plot the abundance using same taxa in g1
+g2 <- rf$plot_diff_abund(group_order = c("MPs", "Soil"), 
+                         select_taxa = rf$plot_diff_bar_taxa)
+
+g1 %>% 
+  insert_right(g2)
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
