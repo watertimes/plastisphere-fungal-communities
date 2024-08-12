@@ -1,0 +1,57 @@
+---
+title: "lefse"
+output: html_document
+date: "2024-08-12"
+---
+
+```{r setup, include=FALSE}
+rm(list = ls())
+require(microeco)
+require(magrittr)
+require(tidyverse)
+require(RColorBrewer)
+require(paletteer)
+
+asv <- read.csv("ASV.csv",header = T,row.names = 1)
+group <- read.csv("group.csv",header = T,row.names = 1)
+taxon <- read.csv("taxon.csv",header = T,row.names = 1)
+
+dataset <- microtable$new(otu_table = asv,sample_table = group,tax_table = taxon)
+
+lefse <- trans_diff$new(dataset = dataset,method = "lefse",group = "group",alpha = 0.01,lefse_subgroup = NULL)
+
+######
+color <- c("#149BEDFF","#FA6B09FF")
+
+lefse$plot_diff_bar(use_number = 1:60,width = 0.6,group_order = c("MPs","Soil"),
+                    color_values = color)
+
+lefse$plot_diff_cladogram(use_taxa_num = 150,
+                          use_feature_num = 75,
+                          clade_label_level = 3,
+                          group_order = c("MPs","Soil"),
+                          color = color)
+
+
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
